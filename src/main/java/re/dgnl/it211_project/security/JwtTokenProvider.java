@@ -9,13 +9,15 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long JWT_EXPIRATION = 604800000L;
+    private final long ACCESS_EXPIRATION = 1000 * 60 * 15;
+    private final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("type", "access")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + JWT_EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
                 .signWith(key)
                 .compact();
     }
@@ -23,8 +25,9 @@ public class JwtTokenProvider {
     public String generateRefreshToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("type", "refresh")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + 604800000L * 4))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
                 .signWith(key)
                 .compact();
     }
@@ -32,6 +35,11 @@ public class JwtTokenProvider {
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getTokenType(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().get("type", String.class);
     }
 
     public boolean validateToken(String token) {
