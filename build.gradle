@@ -43,6 +43,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
 
     implementation 'com.cloudinary:cloudinary-http44:1.33.0'
+    // FR-11: AOP (cho Logging)
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // FR-12: Test (JUnit 5 & Mockito)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    // FR-13: Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

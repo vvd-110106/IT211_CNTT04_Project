@@ -32,7 +32,7 @@ public class LecturerController {
         ));
     }
 
-    @PostMapping("/grade")
+    @PostMapping("/grades")
     public ResponseEntity<?> gradeSubmission(@Valid @RequestBody GradeRequest request) {
         // Gọi service để chấm điểm
         var result = gradingService.gradeSubmission(request);

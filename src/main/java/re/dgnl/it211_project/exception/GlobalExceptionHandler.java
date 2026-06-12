@@ -32,10 +32,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException exception) {
-        String validationMessage = exception.getBindingResult().getFieldError().getDefaultMessage();
+        String message = exception.getBindingResult().hasErrors()
+                ? exception.getBindingResult().getFieldError().getDefaultMessage()
+                : "Dữ liệu đầu vào không hợp lệ";
+
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("success", false);
-        responseMap.put("message", validationMessage);
+        responseMap.put("message", message);
         return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
     }
 

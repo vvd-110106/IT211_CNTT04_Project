@@ -25,6 +25,9 @@ public class GradingService {
         if (submission.getStatus() == StatusEnum.PENDING || submission.getStatus() == null) {
             throw new RuntimeException("Sinh viên chưa thực hiện nộp bài, không thể chấm điểm");
         }
+        if (request.getScore() < 0) {
+            throw new RuntimeException("Điểm không hợp lệ");
+        }
 
         submission.setScore(request.getScore());
         submission.setFeedback(request.getFeedback());

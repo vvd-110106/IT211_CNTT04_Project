@@ -12,12 +12,13 @@ public class JwtTokenProvider {
     private final long ACCESS_EXPIRATION = 1000 * 60 * 15;
     private final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("type", "access")
+                .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
                 .signWith(key)
                 .compact();
     }
@@ -47,5 +48,9 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) { return false; }
+    }
+    public String getRoleFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().get("role", String.class);
     }
 }

@@ -1,10 +1,13 @@
 package re.dgnl.it211_project.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import re.dgnl.it211_project.model.dto.EnrollRequest;
 import re.dgnl.it211_project.model.entity.Submission;
 import re.dgnl.it211_project.service.EnrollmentService;
 import re.dgnl.it211_project.service.SubmissionService;
@@ -15,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/student")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('STUDENT')")
 public class StudentController {
 
     private final SubmissionService submissionService;
@@ -22,9 +26,9 @@ public class StudentController {
 
     // FR-06: Đăng ký tham gia khóa học
     @PostMapping("/enroll")
-    public ResponseEntity<?> enrollCourse(@RequestBody Map<String, Long> request, Principal principal) {
-        Long courseId = request.get("courseId");
-        enrollmentService.enroll(principal.getName(), courseId);
+    public ResponseEntity<?> enrollCourse(@Valid @RequestBody EnrollRequest request, Principal principal) {
+        // Dùng DTO @Valid thay cho Map
+        enrollmentService.enroll(principal.getName(), request.getCourseId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "success", true,

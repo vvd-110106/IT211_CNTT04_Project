@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import re.dgnl.it211_project.repository.UserRepository;
-import re.dgnl.it211_project.repository.CourseRepository;
 
 @Component
 @RequiredArgsConstructor

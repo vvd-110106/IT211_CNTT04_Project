@@ -35,7 +35,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tai khoan da ton tai!");
         }
 
         User newUser = new User();
@@ -45,19 +45,19 @@ public class AuthController {
         newUser.setIsActive(true);
 
         userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Đăng ký thành công!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Dang ky thanh cong!");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) { // Dùng DTO
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("User khong ton tai"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai mật khẩu");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai mat khau");
         }
 
-        String accessToken = jwtTokenProvider.generateToken(user.getUsername());
+        String accessToken = jwtTokenProvider.generateToken(user.getUsername(), user.getRole().name());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
         return ResponseEntity.ok(Map.of(
@@ -75,24 +75,27 @@ public class AuthController {
                 "refresh".equals(jwtTokenProvider.getTokenType(refreshToken))) {
 
             String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.generateToken(username);
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User khong ton tai"));
+
+            String newAccessToken = jwtTokenProvider.generateToken(username, user.getRole().name());
             return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ hoặc sai loại");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token khong hop le hoac sai loai");
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorization) {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
-            // Lưu token vào blacklist để vô hiệu hóa
             TokenBlacklist blacklist = new TokenBlacklist();
             blacklist.setTokenString(token);
             blacklist.setRevokedAt(LocalDateTime.now());
             tokenBlacklistRepository.save(blacklist);
-            return ResponseEntity.ok(Map.of("message", "Đăng xuất thành công"));
+            return ResponseEntity.ok(Map.of("message", "Dang xuat thanh cong"));
         }
-        return ResponseEntity.badRequest().body("Token không hợp lệ");
+        return ResponseEntity.badRequest().body("Token khong hop le");
     }
 
     @PostMapping("/change-password")
@@ -101,6 +104,6 @@ public class AuthController {
             Principal connectedUser) {
 
         authService.changePassword(request, connectedUser);
-        return ResponseEntity.ok(Map.of("message", "Đổi mật khẩu thành công!"));
+        return ResponseEntity.ok(Map.of("message", "Doi mat khau thanh cong!"));
     }
 }
