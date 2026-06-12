@@ -24,6 +24,26 @@ public class SubmissionService {
     private final CloudinaryService cloudinaryService;
 
     @Transactional
+    public Submission saveGitHubSubmission(String username, Long courseId, String githubUrl) {
+        User student = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay sinh vien: " + username));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay khoa hoc co ID: " + courseId));
+
+        Submission submission = submissionRepository.findByStudentAndCourse(student, course)
+                .orElse(new Submission());
+
+        submission.setStudent(student);
+        submission.setCourse(course);
+        submission.setGithubUrl(githubUrl);
+        submission.setStatus(StatusEnum.SUBMITTED);
+        submission.setSubmittedAt(LocalDateTime.now());
+
+        return submissionRepository.save(submission);
+    }
+
+    @Transactional
     public Submission saveSubmission(String username, Long courseId, MultipartFile file) {
         User student = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Khong tim thay sinh vien: " + username));

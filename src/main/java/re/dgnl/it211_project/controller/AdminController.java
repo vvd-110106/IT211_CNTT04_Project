@@ -1,6 +1,8 @@
 package re.dgnl.it211_project.controller;
 
+import org.springframework.data.domain.PageRequest;
 import re.dgnl.it211_project.model.entity.Course;
+import re.dgnl.it211_project.model.entity.User;
 import re.dgnl.it211_project.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,22 @@ public class AdminController {
 
     // --- User Operations ---
     @GetMapping("/users")
-    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(adminService.getUsers(page, size));
+    public ResponseEntity<?> getUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(adminService.getUsers(keyword, PageRequest.of(page, size)));
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.saveUser(user));
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        adminService.deleteUser(id);
+        return ResponseEntity.ok(Map.of("message", "Xóa thành công"));
     }
 
     // --- Course Operations ---

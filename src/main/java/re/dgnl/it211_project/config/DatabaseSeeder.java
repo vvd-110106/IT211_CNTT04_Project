@@ -21,9 +21,27 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (userRepository.findByUsername("admin").isEmpty()) {
-            userRepository.save(new User(null, "admin", passwordEncoder.encode("123456"), RoleEnum.ADMIN, true));
-            userRepository.save(new User(null, "giangvienA", passwordEncoder.encode("123456"), RoleEnum.LECTURER, true));
-            userRepository.save(new User(null, "sinhvienB", passwordEncoder.encode("123456"), RoleEnum.STUDENT, true));
+            userRepository.save(User.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("123456"))
+                    .role(RoleEnum.ADMIN)
+                    .isActive(true)
+                    .build());
+
+            userRepository.save(User.builder()
+                    .username("giangvienA")
+                    .password(passwordEncoder.encode("123456"))
+                    .role(RoleEnum.LECTURER)
+                    .isActive(true)
+                    .build());
+
+            userRepository.save(User.builder()
+                    .username("sinhvienB")
+                    .password(passwordEncoder.encode("123456"))
+                    .role(RoleEnum.STUDENT)
+                    .isActive(true)
+                    .build());
+
             System.out.println("Khởi tạo các tài khoản mẫu thành công (Mật khẩu: 123456)!");
         }
 

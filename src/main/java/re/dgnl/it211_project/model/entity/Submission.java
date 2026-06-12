@@ -18,6 +18,7 @@ public class Submission {
 
     @Column(nullable = false)
     private String reportUrl;
+    private String githubUrl;
 
     private Double score;
 

@@ -106,4 +106,20 @@ public class AuthController {
         authService.changePassword(request, connectedUser);
         return ResponseEntity.ok(Map.of("message", "Doi mat khau thanh cong!"));
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        authService.forgotPassword(request.get("username"));
+        return ResponseEntity.ok(Map.of("message", "Token da duoc tao, kiem tra log"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        authService.resetPassword(
+                request.get("username"),
+                request.get("token"),
+                request.get("newPassword")
+        );
+        return ResponseEntity.ok(Map.of("message", "Doi mat khau thanh cong!"));
+    }
 }

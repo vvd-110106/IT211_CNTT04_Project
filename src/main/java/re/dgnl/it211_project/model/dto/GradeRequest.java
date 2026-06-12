@@ -1,7 +1,13 @@
 package re.dgnl.it211_project.model.dto;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-@Data public class GradeRequest {
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GradeRequest {
     @NotNull(message = "Mã số bài nộp bắt buộc nhập")
     private Long submissionId;
 

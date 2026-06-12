@@ -5,4 +5,5 @@ import lombok.Data;
 public class SubmitRequest {
     private Long courseId;
     private String reportUrl;
+    private String githubUrl;
 }

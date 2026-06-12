@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import re.dgnl.it211_project.model.dto.EnrollRequest;
+import re.dgnl.it211_project.model.dto.SubmitRequest;
 import re.dgnl.it211_project.model.entity.Submission;
 import re.dgnl.it211_project.service.EnrollmentService;
 import re.dgnl.it211_project.service.SubmissionService;
@@ -37,6 +38,15 @@ public class StudentController {
     }
 
     // FR-07: Nộp báo cáo
+    @PostMapping("/submissions/github")
+    public ResponseEntity<?> submitGitHub(@RequestBody SubmitRequest request, Principal principal) {
+        Submission saved = submissionService.saveGitHubSubmission(
+                principal.getName(),
+                request.getCourseId(),
+                request.getGithubUrl()
+        );
+        return ResponseEntity.ok(Map.of("success", true, "message", "Nộp link GitHub thành công"));
+    }
     @PostMapping("/submissions/upload")
     public ResponseEntity<?> uploadReport(
             @RequestParam("courseId") Long courseId,

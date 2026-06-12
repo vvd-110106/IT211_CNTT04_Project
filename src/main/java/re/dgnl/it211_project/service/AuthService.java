@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import re.dgnl.it211_project.model.dto.ChangePasswordRequest;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,34 @@ public class AuthService {
             throw new RuntimeException("Mật khẩu cũ không chính xác");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    public void forgotPassword(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Nguoi dung khong ton tai"));
+
+        String token = java.util.UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        System.out.println("TOKEN reset mat khau: " + token);
+    }
+
+    public void resetPassword(String username, String token, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Nguoi dung khong ton tai"));
+
+        if (user.getResetPasswordToken() == null ||
+                !user.getResetPasswordToken().equals(token) ||
+                user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token khong hop le hoac da het han");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setResetTokenExpiry(null);
         userRepository.save(user);
     }
 }

@@ -4,11 +4,14 @@ import re.dgnl.it211_project.model.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +22,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
     private Boolean isActive = true;
+
+    private String resetPasswordToken;
+    private LocalDateTime resetTokenExpiry;
 }
